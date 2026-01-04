@@ -11,9 +11,16 @@ public class ProductService3p implements IProductService
 {
     private FakestoreProductservice fakestoreProductservice;
 
-    public ProductService3p(FakestoreProductservice fakestoreProductservice) {
+    public ProductService3p(FakestoreProductservice fakestoreProductservice)
+    {
         this.fakestoreProductservice = fakestoreProductservice;
     }
+
+    @Override
+    public Product createProduct(Product product) {
+        return fakestoreProductservice.createProduct(product);
+    }
+
 
     @Override
     public List<Product> getAllProducts(){
@@ -25,15 +32,21 @@ public class ProductService3p implements IProductService
         return fakestoreProductservice.getProductById(id);
     }
 
-    @Override
-    public Product createProduct(Product product) {
-        return fakestoreProductservice.createProduct(product);
-    }
 
 
     @Override
     public Product ReplaceProduct(Product product,long Id){
         return fakestoreProductservice.ReplaceProduct(product,Id);
+    }
+
+    @Override
+    public Product updateProductState(long id) {
+        return null;//It is used for db
+    }
+
+    @Override
+    public Product modifyProduct(Product product, long id) {
+        return null;
     }
 
     @Override
@@ -43,6 +56,11 @@ public class ProductService3p implements IProductService
 
     @Override
     public Category getCategoryById(long id) {
+        return null;
+    }
+
+    @Override
+    public Product getProductBasedOnUserRole(Long pid, Long userid) {
         return null;
     }
 

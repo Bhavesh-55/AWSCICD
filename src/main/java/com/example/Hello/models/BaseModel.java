@@ -1,9 +1,7 @@
 package com.example.Hello.models;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.MappedSuperclass;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.autoconfigure.web.WebProperties;
@@ -17,9 +15,18 @@ public abstract class BaseModel
 {
     @Id
     private long Id;
+
+    @Column(columnDefinition = "DATETIME(0)")
     private Date CreatedAt;
+
+    @Column(columnDefinition = "DATETIME(0)")
     private Date lastUpdatedAt;
+
+    @Enumerated(EnumType.STRING)
     private State state;
+
+
+    //getter and setter
 
     public long getId() {
         return Id;

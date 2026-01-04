@@ -1,17 +1,22 @@
 package com.example.Hello.dtos;
 
 import com.example.Hello.models.Category;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import org.antlr.v4.runtime.misc.NotNull;
+
 
 public class Productdto
 {
     private long id;
+    @NotNull
     private String title;
     private String description;
     private String imageurl;
+    @NotNull
     private Double amount;
     private Categorydto categorydto;
 
-
+//getter and setter
     public long getId() {
         return id;
     }

@@ -22,6 +22,7 @@ import java.util.List;
 public class FakestoreProductservice
 {
 
+    @Autowired
     private RestTemplate restTemplate;
 
     @Autowired
@@ -37,11 +38,8 @@ public class FakestoreProductservice
 
     public Product createProduct(Product product)
     {
-
         FakestoreProductdto fakestoreProductdto=from(product);
-
         FakestoreProductdto fProductdto=RequestForEntity("https://fakestoreapi.com/products",HttpMethod.POST,fakestoreProductdto,FakestoreProductdto.class).getBody();
-
         return from(fProductdto);
     }
 
@@ -49,7 +47,7 @@ public class FakestoreProductservice
 
     public List<Product> getAllProducts() {
         FakestoreProductdto[] fakestoreProductdtos;
-        fakestoreProductdtos=restTemplate.getForEntity("https://fakestoreapi.com/products",FakestoreProductdto[].class).getBody();
+        fakestoreProductdtos=restTemplate.getForEntity("https://fakestoreapi.com/products",FakestoreProductdto[].class).getBody(); //here need to pass array not arraylist
 
         List<Product> productsList=new ArrayList<>();
         for(FakestoreProductdto fakestoreProductdto:fakestoreProductdtos){
@@ -63,8 +61,7 @@ public class FakestoreProductservice
     {
         //check in cache
             //if found return else store
-        
-        
+
         FakestoreProductdto fakestoreProductdto = (FakestoreProductdto) redisTemplate.opsForHash().get("products",id);
         if(fakestoreProductdto!=null)
         {
@@ -79,7 +76,8 @@ public class FakestoreProductservice
             fakestoreProductdtoResponseEntity= restTemplate.getForEntity("https://fakestoreapi.com/products/{myid}",FakestoreProductdto.class,id);
             fakestoreProductdto=fakestoreProductdtoResponseEntity.getBody();
 
-            if(fakestoreProductdtoResponseEntity.getStatusCode().equals(HttpStatusCode.valueOf(200)) && fakestoreProductdto !=null){
+            if(fakestoreProductdtoResponseEntity.getStatusCode().equals(HttpStatusCode.valueOf(200)) && fakestoreProductdto !=null)//IMP CHECK BOTH 200 && !null
+            {
                 // Store the product in Redis cache and return it
                 redisTemplate.opsForHash().put("products", id, fakestoreProductdto);
                 return from(fakestoreProductdto);
@@ -97,12 +95,13 @@ public class FakestoreProductservice
         return restTemplate.execute(url,method, requestCallback, responseExtractor, uriVariables);
     }
 
+
+
+
     public Product ReplaceProduct(Product product,long Id)
     {
         FakestoreProductdto fakestoreProductdto=from(product);
-
         FakestoreProductdto fProductdto=RequestForEntity("https://fakestoreapi.com/products/{Id}",HttpMethod.PUT,fakestoreProductdto,FakestoreProductdto.class,Id).getBody();
-
         return from(fProductdto);
     }
 
@@ -127,7 +126,7 @@ public class FakestoreProductservice
         product.setAmount(fakestoreProductdto.getPrice());
         product.setTitle(fakestoreProductdto.getTitle());
         product.setDescription(fakestoreProductdto.getDescription());
-        product.setImageUrl(fakestoreProductdto.getImage());
+        product.setImageurl(fakestoreProductdto.getImage());
         Category category= new Category();
         category.setName(fakestoreProductdto.getCategory());
         product.setCategory(category);
@@ -138,7 +137,7 @@ public class FakestoreProductservice
         FakestoreProductdto pDto = new FakestoreProductdto();
         pDto.setId(product.getId());
         pDto.setTitle(product.getTitle());
-        pDto.setImage(product.getImageUrl());
+        pDto.setImage(product.getImageurl());
         pDto.setPrice(product.getAmount());
         pDto.setDescription(product.getDescription());
         if (product.getCategory() != null) {

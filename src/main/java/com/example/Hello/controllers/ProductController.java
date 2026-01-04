@@ -3,7 +3,9 @@ import com.example.Hello.dtos.Categorydto;
 import com.example.Hello.dtos.Productdto;
 import com.example.Hello.models.Category;
 import com.example.Hello.models.Product;
+import com.example.Hello.models.State;
 import com.example.Hello.services.IProductService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -19,16 +21,16 @@ public class ProductController
 {
 
     @Autowired
-    @Qualifier("3pSERVICE")
+    @Qualifier("DBSERVICE")
     private IProductService myproductservice;
 
-
     @PostMapping("")
-    public Productdto CreateProduct(@RequestBody Productdto productdto){
+    public ResponseEntity<Productdto> CreateProduct(@Valid @RequestBody Productdto productdto){
         Product product= from(productdto);
         Product NewProduct=myproductservice.createProduct(product);
-        return from(NewProduct);
+        return ResponseEntity.status(HttpStatus.CREATED).body(from(NewProduct)) ;
     }
+
 
     @GetMapping("")
     public List<Productdto> getAllProducts()
@@ -64,7 +66,25 @@ public class ProductController
         Product replaceProduct=from(productdto);
         Product replacedProduct=myproductservice.ReplaceProduct(replaceProduct,Id);
         return from(replacedProduct);
+    }
 
+    @PatchMapping("/toggle-state/{id}")
+    public ResponseEntity<String> toggleProductState(@PathVariable("id") long Id)
+    {
+        Product updatedProduct  =myproductservice.updateProductState(Id);
+        State state= updatedProduct.getState();
+        return ResponseEntity.ok("Customer status="+state);
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<Productdto> modifyProduct(@PathVariable("id") long Id,@RequestBody Product productUpdates )
+    {
+        Product updatedProduct  =myproductservice.modifyProduct(productUpdates,Id);
+        if (updatedProduct != null) {
+            return ResponseEntity.ok(from(updatedProduct));
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @DeleteMapping("/{id}")
@@ -73,18 +93,13 @@ public class ProductController
         return from(DeletedProduct);
     }
 
+/*    @GetMapping("/{pid}/{userid}")
+    public Productdto getProductBasedOnUserRole(@PathVariable("pid") long pid,@PathVariable("userid") long userid)
+    {
+        Product product=myproductservice.getProductBasedOnUserRole(pid, userid);
+        return from(product);
 
-
-
-
-
-
-
-
-
-
-
-
+    }*/
 
 
 
@@ -95,7 +110,7 @@ public class ProductController
         product.setAmount(productdto.getAmount());
         product.setTitle(productdto.getTitle());
         product.setDescription(productdto.getDescription());
-        product.setImageUrl(productdto.getImageurl());
+        product.setImageurl(productdto.getImageurl());
         Category category= new Category();
         category.setName(productdto.getCategorydto().getName());
         category.setDescription(productdto.getCategorydto().getDescription());
@@ -109,7 +124,7 @@ public class ProductController
         Productdto pDto= new Productdto();
         pDto.setId(product.getId());
         pDto.setTitle(product.getTitle());
-        pDto.setImageurl(product.getImageUrl());
+        pDto.setImageurl(product.getImageurl());
         pDto.setAmount(product.getAmount());
         pDto.setDescription(product.getDescription());
         if(product.getCategory()!=null)
