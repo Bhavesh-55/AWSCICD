@@ -73,7 +73,7 @@ public class ProductController
     {
         Product updatedProduct  =myproductservice.updateProductState(Id);
         State state= updatedProduct.getState();
-        return ResponseEntity.ok("Customer status="+state);
+        return ResponseEntity.ok("Customer (Changes to check CI CD)status="+state);
     }
 
     @PatchMapping("/{id}")
